@@ -61,6 +61,7 @@ input[type=number]:focus,select:focus{outline:none;border-color:var(--accent);}
 .per-unit{text-align:right;font-size:11px;color:var(--ink-soft);margin-top:2px;font-family:'IBM Plex Mono',monospace;}
 
 .hint{font-size:12px;color:var(--ink-soft);margin-top:8px;line-height:1.5;}
+.system-badge{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:11px;background:var(--glass-soft);color:var(--glass);padding:4px 9px;border-radius:20px;margin-top:6px;}
 
 .facade-card{border:1px solid var(--line);border-radius:var(--radius);padding:18px;margin-bottom:16px;background:var(--bg);}
 .facade-card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
@@ -76,7 +77,7 @@ input[type=number]:focus,select:focus{outline:none;border-color:var(--accent);}
 table{width:100%;border-collapse:collapse;font-size:13px;margin-bottom:10px;}
 th{text-align:left;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:0.5px;padding:6px 8px;border-bottom:1px solid var(--ink);}
 td{padding:6px 8px;border-bottom:1px solid var(--line);}
-td input{width:100%;padding:6px 8px;font-size:13px;}
+td input, td select{width:100%;padding:6px 8px;font-size:13px;}
 .del-btn{background:none;border:none;color:var(--ink-soft);cursor:pointer;font-size:16px;}
 .del-btn:hover{color:var(--accent);}
 .add-btn{font-family:'IBM Plex Mono',monospace;font-size:12px;background:none;border:1px dashed var(--ink-soft);padding:7px 12px;border-radius:var(--radius);cursor:pointer;color:var(--ink-soft);}
@@ -114,40 +115,94 @@ td input{width:100%;padding:6px 8px;font-size:13px;}
       <div class="panel admin" id="adminPanel">
         <div class="section-title"><span class="num">⚙</span>Каталог и цены</div>
 
+        <div class="subhead">Профили (система РУ/РШ определяет петли и углы)</div>
         <div id="profileTable"></div>
         <button class="add-btn" data-add="profiles">+ добавить тип профиля</button>
 
         <div style="height:18px;"></div>
+        <div class="subhead">Стекло / заполнение</div>
         <div id="glassTable"></div>
         <button class="add-btn" data-add="glass">+ добавить тип стекла</button>
 
         <div style="height:18px;"></div>
+        <div class="subhead">Петли (система РУ / РШ / both — подходит к обеим)</div>
         <div id="hingeTable"></div>
         <button class="add-btn" data-add="hinges">+ добавить тип петли</button>
 
         <div style="height:18px;"></div>
+        <div class="subhead">Ручки</div>
         <div id="handleTable"></div>
         <button class="add-btn" data-add="handles">+ добавить тип ручки</button>
 
         <div style="height:18px;"></div>
+        <div class="subhead">Кромка стекла (₽/пог.м периметра стекла)</div>
+        <div id="edgeTable"></div>
+        <button class="add-btn" data-add="edges">+ добавить вид кромки</button>
+
+        <div style="height:18px;"></div>
+        <div class="subhead">Плёнка на стекло (₽/м²)</div>
+        <div id="filmTable"></div>
+        <button class="add-btn" data-add="films">+ добавить вид плёнки</button>
+
+        <div style="height:18px;"></div>
+        <div class="subhead">Пескоструй (₽/фасад, только работа)</div>
+        <div id="sandblastTable"></div>
+        <button class="add-btn" data-add="sandblast">+ добавить вид пескоструя</button>
+
+        <div style="height:18px;"></div>
+        <div class="subhead">Упаковка (₽/шт)</div>
+        <div id="packagingTable"></div>
+        <button class="add-btn" data-add="packaging">+ добавить вид упаковки</button>
+
+        <div style="height:18px;"></div>
+        <div class="subhead">Углы + винты (комплект на систему)</div>
         <div class="row">
-          <div class="field"><label>Уплотнитель, ₽/м</label><input type="number" id="p_sealant" step="1"></div>
-          <div class="field"><label>Уголок, ₽/шт</label><input type="number" id="p_corner" step="1"></div>
-          <div class="field"><label>Винт, ₽/шт</label><input type="number" id="p_screw" step="1"></div>
+          <div class="field"><label>Угол+винты РУ, ₽/компл.</label><input type="number" id="p_cornerRU" step="1"></div>
+          <div class="field"><label>Угол+винты РШ, ₽/компл.</label><input type="number" id="p_cornerRSH" step="1"></div>
         </div>
         <div class="row">
-          <div class="field"><label>Уплотнитель, остаток м</label><input type="number" id="s_sealant" step="1"></div>
-          <div class="field"><label>Уголок, остаток шт</label><input type="number" id="s_corner" step="1"></div>
-          <div class="field"><label>Винт, остаток шт</label><input type="number" id="s_screw" step="1"></div>
+          <div class="field"><label>Остаток компл. РУ, шт</label><input type="number" id="s_cornerRU" step="1"></div>
+          <div class="field"><label>Остаток компл. РШ, шт</label><input type="number" id="s_cornerRSH" step="1"></div>
         </div>
+
+        <div class="subhead">Уплотнитель (мягкий ≤1800мм высоты / жёсткий &gt;1800мм — автоматически)</div>
         <div class="row">
-          <div class="field"><label>Винтов на угол, шт</label><input type="number" id="p_screwsPerCorner" step="1"></div>
+          <div class="field"><label>Мягкий, ₽/м</label><input type="number" id="p_sealantSoft" step="1"></div>
+          <div class="field"><label>Жёсткий, ₽/м</label><input type="number" id="p_sealantHard" step="1"></div>
+          <div class="field"><label>Остаток, м (общий)</label><input type="number" id="s_sealant" step="1"></div>
+        </div>
+
+        <div class="subhead">Прочее</div>
+        <div class="row">
           <div class="field"><label>Фрезеровка под петлю, ₽/отв.</label><input type="number" id="p_mill" step="1"></div>
+          <div class="field"><label>Сверление стекла под ручку (материал+работа), ₽/отв.</label><input type="number" id="p_glassDrill" step="1"></div>
+          <div class="field"><label>Втулка под отверстие, ₽/шт</label><input type="number" id="p_bushing" step="1"></div>
+        </div>
+        <div class="row">
+          <div class="field"><label>Покраска (услуга), ₽/фасад</label><input type="number" id="p_painting" step="1"></div>
           <div class="field"><label>Запас на подрезку, %</label><input type="number" id="p_waste" step="1"></div>
         </div>
+
+        <div class="subhead">Работы производства (из «ПРАЙС ЛИСТ - РАБОТ»)</div>
         <div class="row">
-          <div class="field"><label>Сверление стекла под ручку, ₽/отв.</label><input type="number" id="p_glassDrill" step="1"></div>
+          <div class="field"><label>Нарезка профиля («Планок в размер»), ₽/фасад</label><input type="number" id="p_cutProfile" step="1"></div>
+          <div class="field"><label>Сборка фурнитуры, ₽/фасад</label><input type="number" id="p_hardwareAssembly" step="1"></div>
         </div>
+        <div class="row">
+          <div class="field"><label>Подготовка планок, ₽/фасад</label><input type="number" id="p_prepProfile" step="1"></div>
+          <div class="field"><label>Сборка фасада (стандарт), ₽/фасад</label><input type="number" id="p_assembleFacade" step="1"></div>
+          <div class="field"><label>Резка стекла, ₽/фасад</label><input type="number" id="p_cutGlassWork" step="1"></div>
+        </div>
+        <div class="row">
+          <div class="field"><label>Сверление профиля под ручку, ₽/отв.</label><input type="number" id="p_handleProfileDrill" step="1"></div>
+          <div class="field"><label>Работа по кромке (закромление), ₽/фасад</label><input type="number" id="p_edgeLabor" step="1"></div>
+          <div class="field"><label>Работа по плёнке, ₽/фасад</label><input type="number" id="p_filmLabor" step="1"></div>
+        </div>
+        <div class="row">
+          <div class="field"><label>Упаковка изделия, ₽/фасад</label><input type="number" id="p_packagingLabor" step="1"></div>
+          <div class="field"><label>Произв. картонной упаковки, ₽/фасад</label><input type="number" id="p_packagingBoxLabor" step="1"></div>
+        </div>
+        <div class="hint">Пять полей выше — это те же строки, что в листе МАРЖА («ПРАЙС ЛИСТ - РАБОТ»), только разбитые по позициям вместо одной общей суммы. Работа по кромке/плёнке добавляется, только если фасад с кромкой/плёнкой; по картонной упаковке — только если выбран картон. В файле остались «снятие борта» и альтернативные ставки сборки (нестандарт/опт) — не добавлял, слишком неоднозначно, к какому сценарию их привязывать.</div>
 
         <div class="save-bar">
           <button class="save-btn" id="saveBtn">Сохранить каталог</button>
@@ -164,7 +219,7 @@ td input{width:100%;padding:6px 8px;font-size:13px;}
             <input type="file" id="importFile" accept=".xlsx,.xls,.csv">
           </div>
         </div>
-        <div class="hint">Файл — 5 листов: «Профили», «Стекло», «Петли», «Ручки», «Прочее», в каждом колонки Название / Цена / Остаток (в «Прочее» — Параметр / Значение). Скачайте текущий каталог, отредактируйте в Excel, загрузите обратно — он полностью заменит текущий каталог.</div>
+        <div class="hint">Понимает два формата: 1) файл, скачанный кнопкой выше (листы Профили/Стекло/Петли/Ручки/Кромка/Упаковка/Прочее); 2) ваши родные листы «Лист1» (прайс на профиль) и «Лист2» (прайс на стекло) — их можно грузить как есть, без переформатирования. Всё остальное (петли/углы/уплотнитель/кромка/покраска/упаковка/втулки) обновляется через шаблон этого калькулятора.</div>
       </div>
     </div>
 
@@ -190,6 +245,7 @@ td input{width:100%;padding:6px 8px;font-size:13px;}
     <div class="section-title"><span class="num">▦</span>Наличие на складе</div>
     <table id="stockTable"><tr><th>Комплектующая</th><th>Нужно на заказ</th><th>В наличии</th><th>Статус</th></tr></table>
     <div id="stockVerdict"></div>
+    <div class="hint">Учитывает профиль / стекло / петли / ручки / углы-комплекты / уплотнитель. Кромка, покраска, упаковка и втулки в остатки пока не считаются.</div>
   </div>
 
   <div class="panel" style="margin-top:20px;">
@@ -204,31 +260,128 @@ td input{width:100%;padding:6px 8px;font-size:13px;}
 <script>
 const DEFAULT_CATALOG = {
   profiles: [
-    {name:"Эконом, серебро", price:420, stock:60},
-    {name:"Стандарт, анодированный", price:560, stock:35},
-    {name:"Премиум, RAL под заказ", price:780, stock:0}
+    {name:"ру-1 МС", price:222.34, stock:0, system:"РУ"},
+    {name:"ру-1 МЗ", price:267.36, stock:0, system:"РУ"},
+    {name:"ру-1 МШ", price:267.34, stock:0, system:"РУ"},
+    {name:"ру-1 МЧ", price:293.08, stock:0, system:"РУ"},
+    {name:"РУ-2 МС", price:236.12, stock:0, system:"РУ"},
+    {name:"РУ-2 МЗ", price:236.12, stock:0, system:"РУ"},
+    {name:"РУ-2 МШ", price:236.12, stock:0, system:"РУ"},
+    {name:"РУ-2 МЧ", price:259.09, stock:0, system:"РУ"},
+    {name:"РУ-3 МС", price:218.66, stock:0, system:"РУ"},
+    {name:"РУ-3 МЗ", price:264.6, stock:0, system:"РУ"},
+    {name:"РУ-3 МШ", price:264.6, stock:60, system:"РУ"},
+    {name:"РУ-3 МЧ", price:283.89, stock:60, system:"РУ"},
+    {name:"РУ-4 МС", price:293.08, stock:0, system:"РУ"},
+    {name:"РУ-4 МЗ", price:293.08, stock:0, system:"РУ"},
+    {name:"РУ-4 МШ", price:293.08, stock:0, system:"РУ"},
+    {name:"РУ-4 МЧ", price:293.08, stock:0, system:"РУ"},
+    {name:"РШ-1 МС", price:339.02, stock:0, system:"РШ"},
+    {name:"РШ-1 МЗ", price:403.33, stock:0, system:"РШ"},
+    {name:"РШ-1 МК", price:403.33, stock:0, system:"РШ"},
+    {name:"РШ-1 МШ", price:403.33, stock:0, system:"РШ"},
+    {name:"РШ-1 МЧ", price:442.84, stock:20, system:"РШ"},
+    {name:"РШ-3 МС", price:354.64, stock:0, system:"РШ"},
+    {name:"РШ-3 МЗ", price:422.62, stock:0, system:"РШ"},
+    {name:"РШ-3 МК", price:422.62, stock:0, system:"РШ"},
+    {name:"РШ-3 МШ", price:422.63, stock:0, system:"РШ"},
+    {name:"РШ-3 МЧ", price:466.72, stock:0, system:"РШ"},
+    {name:"РШ-4 МС", price:438.24, stock:0, system:"РШ"},
+    {name:"РШ-4 МЗ", price:526.44, stock:0, system:"РШ"},
+    {name:"РШ-4 МШ", price:789.66, stock:0, system:"РШ"},
+    {name:"РШ-4 МЧ", price:578.81, stock:0, system:"РШ"},
+    {name:"РШ-7 МС", price:316.05, stock:0, system:"РШ"},
+    {name:"РШ-7 МЗ", price:383.12, stock:0, system:"РШ"},
+    {name:"РШ-7 МШ", price:383.12, stock:0, system:"РШ"},
+    {name:"РШ-7 МЧ", price:421.71, stock:0, system:"РШ"}
   ],
   glass: [
-    {name:"Прозрачное 4мм", price:2100, stock:8},
-    {name:"Тонированное 4мм", price:2600, stock:3},
-    {name:"Сатин матовое", price:2900, stock:0},
-    {name:"Зеркало", price:3200, stock:0}
+    {name:"Зеркало БЦВ 4мм(2550*1605)", price:2376, stock:0},
+    {name:"Зеркало БронЗА 4мм (2550*1605)", price:3960, stock:0},
+    {name:"Зеркало Сатин БРОНЗА 4мм (2550*1605)", price:5445, stock:0},
+    {name:"Зеркало СЕРОЕ 4мм (2550*1605)", price:3960, stock:0},
+    {name:"Зеркало САТИН 4мм (2550*1605)", price:3960, stock:0},
+    {name:"Зеркало САТИН СЕРОЕ 4мм (2550*1605)", price:5445, stock:0},
+    {name:"Сатин БРОНЗА 4мм (2550*1605)", price:4125, stock:0},
+    {name:"Сатин БЦВ 4мм (2550*1605)", price:2541, stock:0},
+    {name:"Сатин Серый 4мм (2550*1605)", price:3960, stock:0},
+    {name:"Стекло Стоп Сол СЕРОЕ 4мм (3210*1000)", price:4785, stock:0},
+    {name:"Стекло Лакобель 9003 (2550*1605)", price:4620, stock:0},
+    {name:"Стекло Осветленное 4мм (2550*1605) UltraviewR", price:3630, stock:0},
+    {name:"Стекло полир БЦВ (3210*1250)", price:1485, stock:8},
+    {name:"Стекло Сатин ультравай 4мм БЦВ (2550*1605)", price:4290, stock:0},
+    {name:"Стекло СтопСол БРОНЗА 4мм (3210*1000)", price:4785, stock:0},
+    {name:"Стекло СтопСол БРОНЗА 4мм (3210*1250)", price:4785, stock:0},
+    {name:"Стекло СтопСол СЕРОЕ 4мм (3210*1250)", price:4785, stock:0},
+    {name:"Стекло тон БРОНЗА 4мм(3210*1125)", price:2904, stock:0},
+    {name:"Стекло тон Серое 4мм (2550*1605)", price:2904, stock:0},
+    {name:"Стекло тон СЕРОЕ 4мм(2550*1605)", price:2805, stock:0},
+    {name:"Стекло тонир бронза 4мм (2550*1605)", price:2805, stock:0},
+    {name:"Стекло тонир серое 4мм (2550*1605)", price:2805, stock:0},
+    {name:"Стоп Сол СЕРЫЙ 4мм(2250*1605)", price:4620, stock:0},
+    {name:"Дарг грей (1650*2440; 3300*2140) без обработки кромки!", price:7380, stock:0}
   ],
   hinges: [
-    {name:"Стандартная", price:180, stock:40},
-    {name:"С доводчиком", price:420, stock:6}
+    {name:"накл", price:185, stock:0, system:"both"},
+    {name:"накл/дов", price:235, stock:0, system:"both"},
+    {name:"петля п/накл. РУ", price:235, stock:0, system:"РУ"},
+    {name:"петля 135* РУ", price:275, stock:0, system:"РУ"},
+    {name:"Петля накл с доводчиком РУ", price:235, stock:0, system:"РУ"},
+    {name:"Петля вкл с доводчиком РУ", price:325, stock:0, system:"РУ"},
+    {name:"петля накл. РШ", price:115, stock:0, system:"РШ"},
+    {name:"петля вкл. РШ", price:115, stock:0, system:"РШ"},
+    {name:"петля п/накл. РШ", price:115, stock:0, system:"РШ"},
+    {name:"петля 135* РШ", price:115, stock:0, system:"РШ"},
+    {name:"Петля накл с доводчиком РШ", price:115, stock:0, system:"РШ"},
+    {name:"Петля вкл с доводчиком РШ", price:115, stock:0, system:"РШ"},
+    {name:"Петля п/накл с доводчиком РШ", price:115, stock:0, system:"РШ"}
   ],
   handles: [
     {name:"Скоба алюминиевая 128мм", price:250, stock:20},
     {name:"Врезная в профиль", price:180, stock:10},
     {name:"Врезная в стекло", price:320, stock:0}
   ],
-  sealant:35, sealantStock:50,
-  corner:60, cornerStock:80,
-  screw:6, screwStock:400,
-  screwsPerCorner:2,
+  edges: [
+    {name:"Нет", price:0, stock:0},
+    {name:"ПЕК", price:260, stock:0},
+    {name:"МЕК", price:270, stock:0}
+  ],
+  films: [
+    {name:"Нет", price:0, stock:0},
+    {name:"Тонирующая А (матовая)", price:1085, stock:0},
+    {name:"Тонирующая В (иней)", price:1090, stock:0},
+    {name:"Тонирующая В (951)", price:1095, stock:0},
+    {name:"Тонирующая В (8510)", price:1100, stock:0},
+    {name:"Тонирующая С (641)", price:1105, stock:0},
+    {name:"Тонирующая Е (архитектурная)", price:1115, stock:0},
+    {name:"Защитная F", price:1120, stock:0}
+  ],
+  sandblast: [
+    {name:"Нет", price:0, stock:0},
+    {name:"Пескоструй А", price:477, stock:0},
+    {name:"Пескоструй Б", price:1432, stock:0}
+  ],
+  packaging: [
+    {name:"Стрейч", price:20, stock:0},
+    {name:"Картон", price:260, stock:0}
+  ],
+  cornerRU:35, cornerRUStock:80,
+  cornerRSH:75, cornerRSHStock:80,
+  sealantSoft:18, sealantHard:40, sealantStock:50,
   mill:150,
-  glassDrill:200,
+  glassDrill:143,          // работа "Сверление стекла 2 отв 7мм" (из ПРАЙС ЛИСТ - РАБОТ)
+  handleProfileDrill:62,   // работа "Сверление профиля под ручку"
+  bushing:10,
+  painting:2500,
+  cutProfile:95,           // работа "Планок в размер"
+  hardwareAssembly:29,     // работа "Собр.комплект.Фурнитуры"
+  prepProfile:143,         // работа "Подготовка планок"
+  assembleFacade:205,      // работа "Собрка фасад.Стандарт"
+  cutGlassWork:102,        // работа "Вырезано стекол"
+  filmLabor:119,           // работа "Оклееных Ст.Плен.ЗАЩИТНОЙ" — добавляется, если выбрана плёнка
+  edgeLabor:1432,          // работа "Закромленных стекол ПЕК/МЕК" — добавляется, если кромка не "Нет"
+  packagingLabor:179,      // работа "Упакован. стеклоизделий" — всегда при упаковке
+  packagingBoxLabor:119,   // работа "Произ-во картон. упаковки" — доп. если упаковка "Картон"
   waste:5
 };
 
@@ -248,7 +401,9 @@ function newFacade(){
     hingeMode:'none', hingeCount:suggestHingeCount(1800), hingeTypeIdx:0,
     leftQty:1, rightQty:0, sidesConfirmed:false,
     handleNeeded:false, handleOrientation:'horizontal', handlePlacement:'profile', handlePosition:'center',
-    handleTypeIdx:0, handleQty:1
+    handleTypeIdx:0, handleQty:1,
+    edgeIdx:0, paintingNeeded:false, packagingIdx:0,
+    filmIdx:0, sandblastIdx:0
   };
 }
 
@@ -292,17 +447,44 @@ function tableHtml(list, key, unit){
   return `<table><tr><th>Название</th><th>Цена, ₽/${unit}</th><th>Остаток, ${unit}</th><th></th></tr>${rows}</table>`;
 }
 
+function systemTableHtml(list, key, unit, systemOptions){
+  let rows = list.map((item,i)=>`
+    <tr>
+      <td><input data-key="${key}" data-i="${i}" data-f="name" value="${item.name}"></td>
+      <td style="width:95px;"><input type="number" data-key="${key}" data-i="${i}" data-f="price" value="${item.price}"></td>
+      <td style="width:90px;">
+        <select data-key="${key}" data-i="${i}" data-f="system">
+          ${systemOptions.map(s=>`<option value="${s}" ${item.system===s?'selected':''}>${s}</option>`).join('')}
+        </select>
+      </td>
+      <td style="width:85px;"><input type="number" data-key="${key}" data-i="${i}" data-f="stock" value="${item.stock||0}"></td>
+      <td style="width:36px;"><button class="del-btn" data-del="${key}" data-i="${i}">×</button></td>
+    </tr>`).join('');
+  return `<table><tr><th>Название</th><th>Цена, ₽/${unit}</th><th>Система</th><th>Остаток, ${unit}</th><th></th></tr>${rows}</table>`;
+}
+
 function renderAdminTables(){
-  document.getElementById('profileTable').innerHTML = tableHtml(catalog.profiles,'profiles','м');
+  document.getElementById('profileTable').innerHTML = systemTableHtml(catalog.profiles,'profiles','м',['РУ','РШ']);
   document.getElementById('glassTable').innerHTML = tableHtml(catalog.glass,'glass','м²');
-  document.getElementById('hingeTable').innerHTML = tableHtml(catalog.hinges,'hinges','шт');
+  document.getElementById('hingeTable').innerHTML = systemTableHtml(catalog.hinges,'hinges','шт',['РУ','РШ','both']);
   document.getElementById('handleTable').innerHTML = tableHtml(catalog.handles,'handles','шт');
+  document.getElementById('edgeTable').innerHTML = tableHtml(catalog.edges,'edges','м');
+  document.getElementById('filmTable').innerHTML = tableHtml(catalog.films,'films','м²');
+  document.getElementById('sandblastTable').innerHTML = tableHtml(catalog.sandblast,'sandblast','шт');
+  document.getElementById('packagingTable').innerHTML = tableHtml(catalog.packaging,'packaging','шт');
 
   document.querySelectorAll('[data-key]').forEach(inp=>{
     inp.addEventListener('input', e=>{
       const {key,i,f} = e.target.dataset;
-      catalog[key][i][f] = (f==='price'||f==='stock') ? parseFloat(e.target.value)||0 : e.target.value;
+      catalog[key][i][f] = (f==='price'||f==='stock') ? (parseFloat(e.target.value)||0) : e.target.value;
       renderFacadesContainer(); calcAll();
+    });
+    inp.addEventListener('change', e=>{
+      const {key,i,f} = e.target.dataset;
+      if(f==='system'){
+        catalog[key][i][f] = e.target.value;
+        renderFacadesContainer(); calcAll();
+      }
     });
   });
   document.querySelectorAll('[data-del]').forEach(btn=>{
@@ -317,27 +499,42 @@ function renderAdminTables(){
 document.querySelectorAll('[data-add]').forEach(btn=>{
   btn.addEventListener('click', e=>{
     const key = e.target.dataset.add;
-    catalog[key].push({name:"Новый тип", price:0, stock:0});
+    const item = {name:"Новый тип", price:0, stock:0};
+    if(key==='profiles') item.system = 'РУ';
+    if(key==='hinges') item.system = 'both';
+    catalog[key].push(item);
     renderAll();
   });
 });
 
 function renderFixedFields(){
-  document.getElementById('p_sealant').value = catalog.sealant;
-  document.getElementById('p_corner').value = catalog.corner;
-  document.getElementById('p_screw').value = catalog.screw;
-  document.getElementById('p_screwsPerCorner').value = catalog.screwsPerCorner;
-  document.getElementById('p_mill').value = catalog.mill;
-  document.getElementById('p_waste').value = catalog.waste;
+  document.getElementById('p_cornerRU').value = catalog.cornerRU;
+  document.getElementById('p_cornerRSH').value = catalog.cornerRSH;
+  document.getElementById('s_cornerRU').value = catalog.cornerRUStock;
+  document.getElementById('s_cornerRSH').value = catalog.cornerRSHStock;
+  document.getElementById('p_sealantSoft').value = catalog.sealantSoft;
+  document.getElementById('p_sealantHard').value = catalog.sealantHard;
   document.getElementById('s_sealant').value = catalog.sealantStock;
-  document.getElementById('s_corner').value = catalog.cornerStock;
-  document.getElementById('s_screw').value = catalog.screwStock;
+  document.getElementById('p_mill').value = catalog.mill;
   document.getElementById('p_glassDrill').value = catalog.glassDrill;
+  document.getElementById('p_bushing').value = catalog.bushing;
+  document.getElementById('p_painting').value = catalog.painting;
+  document.getElementById('p_waste').value = catalog.waste;
+  document.getElementById('p_cutProfile').value = catalog.cutProfile;
+  document.getElementById('p_hardwareAssembly').value = catalog.hardwareAssembly;
+  document.getElementById('p_prepProfile').value = catalog.prepProfile;
+  document.getElementById('p_assembleFacade').value = catalog.assembleFacade;
+  document.getElementById('p_cutGlassWork').value = catalog.cutGlassWork;
+  document.getElementById('p_filmLabor').value = catalog.filmLabor;
+  document.getElementById('p_handleProfileDrill').value = catalog.handleProfileDrill;
+  document.getElementById('p_edgeLabor').value = catalog.edgeLabor;
+  document.getElementById('p_packagingLabor').value = catalog.packagingLabor;
+  document.getElementById('p_packagingBoxLabor').value = catalog.packagingBoxLabor;
 }
 
-['p_sealant','p_corner','p_screw','p_screwsPerCorner','p_mill','p_waste','s_sealant','s_corner','s_screw','p_glassDrill'].forEach(id=>{
+['p_cornerRU','p_cornerRSH','s_cornerRU','s_cornerRSH','p_sealantSoft','p_sealantHard','s_sealant','p_mill','p_glassDrill','p_bushing','p_painting','p_waste','p_cutProfile','p_hardwareAssembly','p_prepProfile','p_assembleFacade','p_cutGlassWork','p_filmLabor','p_handleProfileDrill','p_edgeLabor','p_packagingLabor','p_packagingBoxLabor'].forEach(id=>{
   document.getElementById(id).addEventListener('input', e=>{
-    const map = {p_sealant:'sealant',p_corner:'corner',p_screw:'screw',p_screwsPerCorner:'screwsPerCorner',p_mill:'mill',p_waste:'waste',s_sealant:'sealantStock',s_corner:'cornerStock',s_screw:'screwStock',p_glassDrill:'glassDrill'};
+    const map = {p_cornerRU:'cornerRU',p_cornerRSH:'cornerRSH',s_cornerRU:'cornerRUStock',s_cornerRSH:'cornerRSHStock',p_sealantSoft:'sealantSoft',p_sealantHard:'sealantHard',s_sealant:'sealantStock',p_mill:'mill',p_glassDrill:'glassDrill',p_bushing:'bushing',p_painting:'painting',p_waste:'waste',p_cutProfile:'cutProfile',p_hardwareAssembly:'hardwareAssembly',p_prepProfile:'prepProfile',p_assembleFacade:'assembleFacade',p_cutGlassWork:'cutGlassWork',p_filmLabor:'filmLabor',p_handleProfileDrill:'handleProfileDrill',p_edgeLabor:'edgeLabor',p_packagingLabor:'packagingLabor',p_packagingBoxLabor:'packagingBoxLabor'};
     catalog[map[id]] = parseFloat(e.target.value)||0;
     renderFacadesContainer(); calcAll();
   });
@@ -351,29 +548,50 @@ document.getElementById('adminToggle').addEventListener('click', ()=>{
 /* ---------- Excel import / export ---------- */
 
 const FIXED_PARAMS = [
-  {label:'Уплотнитель, ₽/м', key:'sealant'},
+  {label:'Угол+винты РУ, ₽/компл.', key:'cornerRU'},
+  {label:'Остаток компл. РУ, шт', key:'cornerRUStock'},
+  {label:'Угол+винты РШ, ₽/компл.', key:'cornerRSH'},
+  {label:'Остаток компл. РШ, шт', key:'cornerRSHStock'},
+  {label:'Уплотнитель мягкий, ₽/м', key:'sealantSoft'},
+  {label:'Уплотнитель жёсткий, ₽/м', key:'sealantHard'},
   {label:'Уплотнитель, остаток м', key:'sealantStock'},
-  {label:'Уголок, ₽/шт', key:'corner'},
-  {label:'Уголок, остаток шт', key:'cornerStock'},
-  {label:'Винт, ₽/шт', key:'screw'},
-  {label:'Винт, остаток шт', key:'screwStock'},
-  {label:'Винтов на угол, шт', key:'screwsPerCorner'},
   {label:'Фрезеровка под петлю, ₽/отв.', key:'mill'},
   {label:'Сверление стекла под ручку, ₽/отв.', key:'glassDrill'},
+  {label:'Втулка под отверстие, ₽/шт', key:'bushing'},
+  {label:'Покраска, ₽/фасад', key:'painting'},
   {label:'Запас на подрезку, %', key:'waste'},
+  {label:'Нарезка профиля, ₽/фасад', key:'cutProfile'},
+  {label:'Сборка фурнитуры, ₽/фасад', key:'hardwareAssembly'},
+  {label:'Подготовка планок, ₽/фасад', key:'prepProfile'},
+  {label:'Сборка фасада, ₽/фасад', key:'assembleFacade'},
+  {label:'Резка стекла, ₽/фасад', key:'cutGlassWork'},
+  {label:'Работа по плёнке, ₽/фасад', key:'filmLabor'},
+  {label:'Сверление профиля под ручку, ₽/отв.', key:'handleProfileDrill'},
+  {label:'Работа по кромке, ₽/фасад', key:'edgeLabor'},
+  {label:'Упаковка изделия (работа), ₽/фасад', key:'packagingLabor'},
+  {label:'Произв. картонной упаковки (работа), ₽/фасад', key:'packagingBoxLabor'},
 ];
 
 document.getElementById('exportBtn').addEventListener('click', ()=>{
   const wb = XLSX.utils.book_new();
-  const catSheet = (list)=>XLSX.utils.json_to_sheet(list.map(x=>({Название:x.name, Цена:x.price, Остаток:x.stock||0})));
+  const catSheet = (list)=>XLSX.utils.json_to_sheet(list.map(x=>({Название:x.name, Цена:x.price, Система:x.system||'', Остаток:x.stock||0})));
   XLSX.utils.book_append_sheet(wb, catSheet(catalog.profiles), 'Профили');
   XLSX.utils.book_append_sheet(wb, catSheet(catalog.glass), 'Стекло');
   XLSX.utils.book_append_sheet(wb, catSheet(catalog.hinges), 'Петли');
   XLSX.utils.book_append_sheet(wb, catSheet(catalog.handles), 'Ручки');
+  XLSX.utils.book_append_sheet(wb, catSheet(catalog.edges), 'Кромка');
+  XLSX.utils.book_append_sheet(wb, catSheet(catalog.films), 'Плёнка');
+  XLSX.utils.book_append_sheet(wb, catSheet(catalog.sandblast), 'Пескоструй');
+  XLSX.utils.book_append_sheet(wb, catSheet(catalog.packaging), 'Упаковка');
   const paramSheet = XLSX.utils.json_to_sheet(FIXED_PARAMS.map(p=>({Параметр:p.label, Значение:catalog[p.key]})));
   XLSX.utils.book_append_sheet(wb, paramSheet, 'Прочее');
   XLSX.writeFile(wb, 'facade-catalog.xlsx');
 });
+
+function detectSystem(codeText){
+  const t = String(codeText||'').toLowerCase();
+  return t.includes('рш') || t.includes('rsh') ? 'РШ' : 'РУ';
+}
 
 document.getElementById('importFile').addEventListener('change', (e)=>{
   const file = e.target.files[0];
@@ -383,32 +601,67 @@ document.getElementById('importFile').addEventListener('change', (e)=>{
     try{
       const data = new Uint8Array(ev.target.result);
       const wb = XLSX.read(data, {type:'array'});
-      const readList = (sheetName)=>{
+      let touched = [];
+
+      const readList = (sheetName, withSystem)=>{
         if(!wb.SheetNames.includes(sheetName)) return null;
         const json = XLSX.utils.sheet_to_json(wb.Sheets[sheetName]);
-        return json.map(r=>({name:String(r['Название']??'').trim(), price:parseFloat(r['Цена'])||0, stock:parseFloat(r['Остаток'])||0}))
-                    .filter(x=>x.name);
+        return json.map(r=>{
+          const item = {name:String(r['Название']??'').trim(), price:parseFloat(r['Цена'])||0, stock:parseFloat(r['Остаток'])||0};
+          if(withSystem) item.system = String(r['Система']??'РУ').trim() || 'РУ';
+          return item;
+        }).filter(x=>x.name);
       };
-      const newProfiles = readList('Профили');
-      const newGlass = readList('Стекло');
-      const newHinges = readList('Петли');
-      const newHandles = readList('Ручки');
-      if(newProfiles && newProfiles.length) catalog.profiles = newProfiles;
-      if(newGlass && newGlass.length) catalog.glass = newGlass;
-      if(newHinges && newHinges.length) catalog.hinges = newHinges;
-      if(newHandles && newHandles.length) catalog.handles = newHandles;
+
+      const p1 = readList('Профили', true); if(p1 && p1.length){ catalog.profiles = p1; touched.push('Профили'); }
+      const g1 = readList('Стекло', false); if(g1 && g1.length){ catalog.glass = g1; touched.push('Стекло'); }
+      const h1 = readList('Петли', true); if(h1 && h1.length){ catalog.hinges = h1; touched.push('Петли'); }
+      const hd1 = readList('Ручки', false); if(hd1 && hd1.length){ catalog.handles = hd1; touched.push('Ручки'); }
+      const e1 = readList('Кромка', false); if(e1 && e1.length){ catalog.edges = e1; touched.push('Кромка'); }
+      const fl1 = readList('Плёнка', false); if(fl1 && fl1.length){ catalog.films = fl1; touched.push('Плёнка'); }
+      const sb1 = readList('Пескоструй', false); if(sb1 && sb1.length){ catalog.sandblast = sb1; touched.push('Пескоструй'); }
+      const pk1 = readList('Упаковка', false); if(pk1 && pk1.length){ catalog.packaging = pk1; touched.push('Упаковка'); }
+
       if(wb.SheetNames.includes('Прочее')){
         const rows = XLSX.utils.sheet_to_json(wb.Sheets['Прочее']);
         rows.forEach(r=>{
           const found = FIXED_PARAMS.find(p=>p.label === String(r['Параметр']).trim());
           if(found) catalog[found.key] = parseFloat(r['Значение'])||0;
         });
+        touched.push('Прочее');
       }
+
+      // родной формат клиента: Лист1 (профиль), Лист2 (стекло)
+      if(!p1 && wb.SheetNames.includes('Лист1')){
+        const rows = XLSX.utils.sheet_to_json(wb.Sheets['Лист1'], {header:1});
+        const list = [];
+        rows.forEach(row=>{
+          const name = row[6], code = row[7], price = row[9];
+          if(typeof name === 'string' && name.trim() && typeof price === 'number'){
+            list.push({name:name.trim(), price:price, stock:0, system:detectSystem(code)});
+          }
+        });
+        if(list.length){ catalog.profiles = list; touched.push('Лист1 → Профили'); }
+      }
+      if(!g1 && wb.SheetNames.includes('Лист2')){
+        const rows = XLSX.utils.sheet_to_json(wb.Sheets['Лист2'], {header:1});
+        const list = [];
+        rows.forEach(row=>{
+          const name = row[2], price = row[5];
+          if(typeof name === 'string' && name.trim() && typeof price === 'number'){
+            list.push({name:name.trim(), price:price, stock:0});
+          }
+        });
+        if(list.length){ catalog.glass = list; touched.push('Лист2 → Стекло (3-е число)'); }
+      }
+
       renderAll();
-      document.getElementById('saveStatus').textContent = "Каталог загружен из файла — не забудьте нажать «Сохранить каталог»";
-      setTimeout(()=>document.getElementById('saveStatus').textContent="",4000);
+      document.getElementById('saveStatus').textContent = touched.length
+        ? `Загружено: ${touched.join(', ')} — не забудьте «Сохранить каталог»`
+        : 'Не нашёл знакомых листов в файле';
+      setTimeout(()=>document.getElementById('saveStatus').textContent="",5000);
     }catch(err){
-      alert('Не удалось прочитать файл. Проверьте формат — .xlsx со листами Профили/Стекло/Петли/Ручки/Прочее.');
+      alert('Не удалось прочитать файл. Проверьте формат.');
     }
     e.target.value = '';
   };
@@ -420,6 +673,12 @@ document.getElementById('importFile').addEventListener('change', (e)=>{
 function facadeCardHtml(f, i){
   const posLabels = {bottom:'Снизу', center:'По центру', top:'Сверху'};
   const sideMismatch = (f.leftQty + f.rightQty) !== f.qty;
+  const profile = catalog.profiles[f.profileIdx] || {system:'РУ'};
+  const system = profile.system || 'РУ';
+  const hingeOptions = catalog.hinges
+    .map((h,hi)=>({h,hi}))
+    .filter(o=>o.h.system===system || o.h.system==='both');
+
   return `
   <div class="facade-card" data-idx="${i}">
     <div class="facade-card-header">
@@ -435,11 +694,36 @@ function facadeCardHtml(f, i){
 
     <div class="row">
       <div class="field"><label>Тип профиля</label>
-        <select data-idx="${i}" data-field="profileIdx">${catalog.profiles.map((p,pi)=>`<option value="${pi}" ${pi==f.profileIdx?'selected':''}>${p.name} — ${p.price}₽/м</option>`).join('')}</select>
+        <select data-idx="${i}" data-field="profileIdx">${catalog.profiles.map((p,pi)=>`<option value="${pi}" ${pi==f.profileIdx?'selected':''}>${p.name} (${p.system}) — ${p.price}₽/м</option>`).join('')}</select>
+        <span class="system-badge">Система: ${system} · угол+винты ${system==='РШ'?catalog.cornerRSH:catalog.cornerRU}₽/компл.</span>
       </div>
       <div class="field"><label>Тип стекла</label>
         <select data-idx="${i}" data-field="glassIdx">${catalog.glass.map((g,gi)=>`<option value="${gi}" ${gi==f.glassIdx?'selected':''}>${g.name} — ${g.price}₽/м²</option>`).join('')}</select>
       </div>
+    </div>
+
+    <div class="row">
+      <div class="field"><label>Кромка стекла</label>
+        <select data-idx="${i}" data-field="edgeIdx">${catalog.edges.map((ed,ei)=>`<option value="${ei}" ${ei==f.edgeIdx?'selected':''}>${ed.name}${ed.price>0?` — ${ed.price}₽/м`:''}</option>`).join('')}</select>
+      </div>
+      <div class="field"><label>Упаковка</label>
+        <select data-idx="${i}" data-field="packagingIdx">${catalog.packaging.map((pk,pi)=>`<option value="${pi}" ${pi==f.packagingIdx?'selected':''}>${pk.name} — ${pk.price}₽/шт</option>`).join('')}</select>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="field"><label>Плёнка на стекло</label>
+        <select data-idx="${i}" data-field="filmIdx">${catalog.films.map((fl,fi)=>`<option value="${fi}" ${fi==f.filmIdx?'selected':''}>${fl.name}${fl.price>0?` — ${fl.price}₽/м²`:''}</option>`).join('')}</select>
+      </div>
+      <div class="field"><label>Пескоструй</label>
+        <select data-idx="${i}" data-field="sandblastIdx">${catalog.sandblast.map((sb,si)=>`<option value="${si}" ${si==f.sandblastIdx?'selected':''}>${sb.name}${sb.price>0?` — ${sb.price}₽`:''}</option>`).join('')}</select>
+      </div>
+    </div>
+
+    <div class="subhead">Покраска</div>
+    <div class="opt-group">
+      <button class="opt-btn ${!f.paintingNeeded?'active':''}" data-idx="${i}" data-opt="paintingNeeded" data-value="no">Не нужна</button>
+      <button class="opt-btn ${f.paintingNeeded?'active':''}" data-idx="${i}" data-opt="paintingNeeded" data-value="yes">Нужна (+${catalog.painting}₽)</button>
     </div>
 
     <div class="subhead">Петли</div>
@@ -452,15 +736,15 @@ function facadeCardHtml(f, i){
     ${f.hingeMode!=='none' ? `
     <div class="row" style="margin-top:12px;">
       <div class="field"><label>Кол-во позиций</label><input type="number" data-idx="${i}" data-field="hingeCount" value="${f.hingeCount}" min="0" step="1"></div>
-      ${f.hingeMode==='install' ? `<div class="field"><label>Тип петли</label><select data-idx="${i}" data-field="hingeTypeIdx">${catalog.hinges.map((h,hi)=>`<option value="${hi}" ${hi==f.hingeTypeIdx?'selected':''}>${h.name} — ${h.price}₽/шт</option>`).join('')}</select></div>` : ''}
+      ${f.hingeMode==='install' ? `<div class="field"><label>Тип петли (система ${system})</label><select data-idx="${i}" data-field="hingeTypeIdx">${hingeOptions.map(o=>`<option value="${o.hi}" ${o.hi==f.hingeTypeIdx?'selected':''}>${o.h.name} — ${o.h.price}₽/шт</option>`).join('')}</select></div>` : ''}
     </div>
     <div class="row">
-      <div class="field"><label>Левых, шт</label><input type="number" data-idx="${i}" data-field="leftQty" value="${f.leftQty}" min="0" step="1"></div>
-      <div class="field"><label>Правых, шт</label><input type="number" data-idx="${i}" data-field="rightQty" value="${f.rightQty}" min="0" step="1"></div>
+      <div class="field"><label>Левых (ЛЕВЫЙ), шт</label><input type="number" data-idx="${i}" data-field="leftQty" value="${f.leftQty}" min="0" step="1"></div>
+      <div class="field"><label>Правых (ПРАВЫЙ), шт</label><input type="number" data-idx="${i}" data-field="rightQty" value="${f.rightQty}" min="0" step="1"></div>
     </div>
     <div class="hint" id="sideWarn-${i}" style="color:var(--accent);${sideMismatch?'':'display:none;'}">⚠ Левых + правых = ${f.leftQty+f.rightQty}, а в позиции ${f.qty} шт. Поправьте, чтобы совпадало.</div>
     <div style="margin-top:10px;display:flex;align-items:center;gap:10px;">
-      <button class="opt-btn" data-idx="${i}" data-confirm-sides="1">Подтверждаю разбивку по сторонам</button>
+      <button class="opt-btn" data-idx="${i}" data-confirm-sides="1">Подтверждаю разбивку ЛЕВЫЙ/ПРАВЫЙ</button>
       <span id="sideStatus-${i}" class="${f.sidesConfirmed?'stock-ok':'stock-bad'}" style="font-family:'IBM Plex Mono',monospace;font-size:12px;">${f.sidesConfirmed?'✓ подтверждено':'не подтверждено'}</span>
     </div>
     ` : ''}
@@ -501,7 +785,7 @@ function facadeCardHtml(f, i){
       <div class="field"><label>Тип ручки</label><select data-idx="${i}" data-field="handleTypeIdx">${catalog.handles.map((h,hi)=>`<option value="${hi}" ${hi==f.handleTypeIdx?'selected':''}>${h.name} — ${h.price}₽/шт</option>`).join('')}</select></div>
       <div class="field"><label>Количество, шт</label><input type="number" data-idx="${i}" data-field="handleQty" value="${f.handleQty}" min="1" step="1"></div>
     </div>
-    ${f.handlePlacement==='glass' ? `<div class="hint">Крепление в стекле требует сверления — добавляется отдельная позиция в смету.</div>` : ''}
+    ${f.handlePlacement==='glass' ? `<div class="hint">Крепление в стекле = сверление + втулка на каждое отверстие, добавляются отдельными позициями в смету.</div>` : ''}
     ` : ''}
   </div>`;
 }
@@ -535,7 +819,7 @@ document.getElementById('addFacadeBtn').addEventListener('click', ()=>{
   calcAll();
 });
 
-const NUMERIC_FIELDS = ['width','height','qty','hingeCount','hingeTypeIdx','profileIdx','glassIdx','leftQty','rightQty','handleTypeIdx','handleQty'];
+const NUMERIC_FIELDS = ['width','height','qty','hingeCount','hingeTypeIdx','profileIdx','glassIdx','leftQty','rightQty','handleTypeIdx','handleQty','edgeIdx','packagingIdx','filmIdx','sandblastIdx'];
 
 document.getElementById('facadesContainer').addEventListener('input', e=>{
   const t = e.target;
@@ -553,6 +837,17 @@ document.getElementById('facadesContainer').addEventListener('input', e=>{
     facades[idx].sidesConfirmed = false;
     updateSideHint(idx);
   }
+  if(field==='profileIdx'){
+    // при смене профиля система могла поменяться — если текущая петля не подходит, переключаемся на первую подходящую
+    const profile = catalog.profiles[facades[idx].profileIdx] || {system:'РУ'};
+    const system = profile.system || 'РУ';
+    const currentHinge = catalog.hinges[facades[idx].hingeTypeIdx];
+    if(!currentHinge || (currentHinge.system!==system && currentHinge.system!=='both')){
+      const firstMatch = catalog.hinges.findIndex(h=>h.system===system || h.system==='both');
+      facades[idx].hingeTypeIdx = firstMatch>=0 ? firstMatch : 0;
+    }
+    renderSingleCard(idx);
+  }
   calcAll();
 });
 
@@ -568,7 +863,7 @@ document.getElementById('facadesContainer').addEventListener('click', e=>{
     const idx = parseInt(optBtn.dataset.idx);
     const opt = optBtn.dataset.opt;
     let value = optBtn.dataset.value;
-    if(opt==='handleNeeded') value = (value==='yes');
+    if(opt==='handleNeeded' || opt==='paintingNeeded') value = (value==='yes');
     facades[idx][opt] = value;
     if(opt==='hingeMode') facades[idx].sidesConfirmed = false;
     renderSingleCard(idx);
@@ -608,10 +903,15 @@ const placeLabels = {profile:'в профиле', glass:'в стекле'};
 const posLabelsRu = {bottom:'снизу', center:'по центру', top:'сверху'};
 
 function computeFacade(f){
-  const profile = catalog.profiles[f.profileIdx] || {name:'—',price:0,stock:0};
+  const profile = catalog.profiles[f.profileIdx] || {name:'—',price:0,stock:0,system:'РУ'};
+  const system = profile.system || 'РУ';
   const glass = catalog.glass[f.glassIdx] || {name:'—',price:0,stock:0};
-  const hinge = catalog.hinges[f.hingeTypeIdx] || {name:'—',price:0,stock:0};
+  const hinge = catalog.hinges[f.hingeTypeIdx] || {name:'—',price:0,stock:0,system:system};
   const handle = catalog.handles[f.handleTypeIdx] || {name:'—',price:0,stock:0};
+  const edge = catalog.edges[f.edgeIdx] || {name:'Нет',price:0};
+  const film = catalog.films[f.filmIdx] || {name:'Нет',price:0};
+  const sandblast = catalog.sandblast[f.sandblastIdx] || {name:'Нет',price:0};
+  const packaging = catalog.packaging[f.packagingIdx] || {name:'—',price:0};
   const wasteK = 1 + (catalog.waste||0)/100;
 
   const perimeterM = 2*(f.width+f.height)/1000;
@@ -621,62 +921,104 @@ function computeFacade(f){
   const glassW = Math.max(0, f.width-2*inset), glassH = Math.max(0, f.height-2*inset);
   const glassAreaM2 = glassW*glassH/1_000_000;
   const glassCost = glassAreaM2 * glass.price;
+  const glassPerimeterM = 2*(glassW+glassH)/1000;
 
-  const sealantCost = perimeterM * wasteK * catalog.sealant;
-  const cornersCost = 4 * catalog.corner;
-  const screwsCost = 4 * catalog.screwsPerCorner * catalog.screw;
+  const sealantType = f.height > 1800 ? 'hard' : 'soft';
+  const sealantPrice = sealantType==='hard' ? catalog.sealantHard : catalog.sealantSoft;
+  const sealantCost = perimeterM * wasteK * sealantPrice;
+
+  const cornerPrice = system==='РШ' ? catalog.cornerRSH : catalog.cornerRU;
+  const cornersCost = 4 * cornerPrice;
 
   let hingeCost = 0, hingeLabel = '';
   if(f.hingeMode==='install'){ hingeCost = f.hingeCount*hinge.price; hingeLabel = `Петли (${hinge.name} × ${f.hingeCount})`; }
   else if(f.hingeMode==='mill'){ hingeCost = f.hingeCount*catalog.mill; hingeLabel = `Фрезеровка под петли (× ${f.hingeCount})`; }
 
-  let handleCost = 0, drillCost = 0;
+  let handleCost = 0, drillCost = 0, bushingCost = 0, bushingQty = 0, profileDrillCost = 0;
   if(f.handleNeeded){
     handleCost = f.handleQty * handle.price;
-    if(f.handlePlacement==='glass') drillCost = f.handleQty * catalog.glassDrill;
+    if(f.handlePlacement==='glass'){
+      drillCost = f.handleQty * catalog.glassDrill;
+      bushingQty = f.handleQty;
+      bushingCost = bushingQty * catalog.bushing;
+    } else if(f.handlePlacement==='profile'){
+      profileDrillCost = f.handleQty * catalog.handleProfileDrill;
+    }
   }
 
-  const perUnit = profileCost+glassCost+sealantCost+cornersCost+screwsCost+hingeCost+handleCost+drillCost;
+  const edgeMaterialCost = edge.price>0 ? glassPerimeterM * edge.price : 0;
+  const edgeLaborCost = edge.price>0 ? catalog.edgeLabor : 0;
+  const edgeCost = edgeMaterialCost + edgeLaborCost;
+  const filmMaterialCost = film.price>0 ? glassAreaM2 * film.price : 0;
+  const filmLaborCost = film.price>0 ? catalog.filmLabor : 0;
+  const filmCost = filmMaterialCost + filmLaborCost;
+  const sandblastCost = sandblast.price;
+  const paintingCost = f.paintingNeeded ? catalog.painting : 0;
+  const packagingMaterialCost = packaging.price;
+  const packagingLaborCost = catalog.packagingLabor + (packaging.name==='Картон' ? catalog.packagingBoxLabor : 0);
+  const packagingCost = packagingMaterialCost + packagingLaborCost;
+  const baselineWorkCost = catalog.cutProfile + catalog.hardwareAssembly + catalog.prepProfile + catalog.assembleFacade + catalog.cutGlassWork;
+
+  const perUnit = profileCost+glassCost+sealantCost+cornersCost+hingeCost+handleCost+drillCost+bushingCost+profileDrillCost+edgeCost+filmCost+sandblastCost+paintingCost+packagingCost+baselineWorkCost;
   const total = perUnit * f.qty;
 
   const rows = [
-    ['Профиль '+profile.name+` (${perimeterM.toFixed(2)} м)`, profileCost],
+    ['Профиль '+profile.name+` (${perimeterM.toFixed(2)} м, система ${system})`, profileCost],
     ['Стекло '+glass.name+` (${glassAreaM2.toFixed(2)} м²)`, glassCost],
-    ['Уплотнитель', sealantCost],
-    ['Уголки (4 шт)', cornersCost],
-    [`Винты (${4*catalog.screwsPerCorner} шт)`, screwsCost],
+    [`Уплотнитель (${sealantType==='hard'?'жёсткий':'мягкий'})`, sealantCost],
+    [`Углы + винты (система ${system}, 4 компл.)`, cornersCost],
+    ['Нарезка профиля', catalog.cutProfile],
+    ['Сборка фурнитуры', catalog.hardwareAssembly],
+    ['Подготовка планок', catalog.prepProfile],
+    ['Сборка фасада', catalog.assembleFacade],
+    ['Резка стекла', catalog.cutGlassWork],
   ];
   if(hingeCost>0) rows.push([hingeLabel, hingeCost]);
   if(handleCost>0) rows.push([`Ручка «${handle.name}» (${orLabels[f.handleOrientation]}, ${placeLabels[f.handlePlacement]}, ${posLabelsRu[f.handlePosition]}) × ${f.handleQty}`, handleCost]);
   if(drillCost>0) rows.push([`Сверление стекла под ручку × ${f.handleQty}`, drillCost]);
+  if(bushingCost>0) rows.push([`Втулки под отверстия × ${bushingQty}`, bushingCost]);
+  if(profileDrillCost>0) rows.push([`Сверление профиля под ручку × ${f.handleQty}`, profileDrillCost]);
+  if(edgeCost>0) rows.push([`Кромка ${edge.name} (материал ${glassPerimeterM.toFixed(2)} м + работа)`, edgeCost]);
+  if(filmCost>0) rows.push([`Плёнка ${film.name} (${glassAreaM2.toFixed(2)} м² + работа)`, filmCost]);
+  if(sandblastCost>0) rows.push([sandblast.name, sandblastCost]);
+  if(paintingCost>0) rows.push(['Покраска', paintingCost]);
+  if(packagingCost>0) rows.push([`Упаковка (${packaging.name}, материал+работа)`, packagingCost]);
 
   const specRows = [
     { part:`Профиль «${profile.name}», вертикаль (рез 45°/45°)`, size:`${Math.round(f.height)}`, per:2 },
     { part:`Профиль «${profile.name}», горизонталь (рез 45°/45°)`, size:`${Math.round(f.width)}`, per:2 },
     { part:`Стекло «${glass.name}»`, size:`${Math.round(glassW)} × ${Math.round(glassH)}`, per:1 },
-    { part:`Уплотнитель, вертикаль`, size:`${Math.round(glassH)}`, per:2 },
-    { part:`Уплотнитель, горизонталь`, size:`${Math.round(glassW)}`, per:2 },
-    { part:`Уголок сборочный`, size:`—`, per:4 },
-    { part:`Винт`, size:`—`, per:4*catalog.screwsPerCorner },
+    { part:`Уплотнитель ${sealantType==='hard'?'жёсткий':'мягкий'}, вертикаль`, size:`${Math.round(glassH)}`, per:2 },
+    { part:`Уплотнитель ${sealantType==='hard'?'жёсткий':'мягкий'}, горизонталь`, size:`${Math.round(glassW)}`, per:2 },
+    { part:`Угол + 2 винта (система ${system})`, size:`—`, per:4 },
   ];
   if(f.hingeMode==='install') specRows.push({ part:`Петля «${hinge.name}»`, size:`—`, per:f.hingeCount });
   else if(f.hingeMode==='mill') specRows.push({ part:`Фрезеровка под петлю`, size:`отверстие`, per:f.hingeCount });
   if(f.handleNeeded){
     specRows.push({ part:`Ручка «${handle.name}» (${orLabels[f.handleOrientation]}, ${placeLabels[f.handlePlacement]}, ${posLabelsRu[f.handlePosition]})`, size:`—`, per:f.handleQty });
-    if(f.handlePlacement==='glass') specRows.push({ part:`Сверление стекла под ручку`, size:`отверстие`, per:f.handleQty });
+    if(f.handlePlacement==='glass'){
+      specRows.push({ part:`Сверление стекла под ручку`, size:`отверстие`, per:f.handleQty });
+      specRows.push({ part:`Втулка под отверстие`, size:`—`, per:f.handleQty });
+    } else if(f.handlePlacement==='profile'){
+      specRows.push({ part:`Сверление профиля под ручку`, size:`отверстие`, per:f.handleQty });
+    }
   }
+  if(edge.price>0) specRows.push({ part:`Кромка ${edge.name}`, size:`${glassPerimeterM.toFixed(2)} м`, per:1 });
+  if(film.price>0) specRows.push({ part:`Плёнка ${film.name}`, size:`${glassAreaM2.toFixed(2)} м²`, per:1 });
+  if(sandblast.price>0) specRows.push({ part:sandblast.name, size:`услуга`, per:1 });
+  if(f.paintingNeeded) specRows.push({ part:`Покраска`, size:`услуга`, per:1 });
+  specRows.push({ part:`Упаковка ${packaging.name}`, size:`—`, per:1 });
 
   const stockNeeds = [
     {cat:'profiles', idx:f.profileIdx, name:`Профиль «${profile.name}»`, need:perimeterM*wasteK*f.qty, unit:'м'},
     {cat:'glass', idx:f.glassIdx, name:`Стекло «${glass.name}»`, need:glassAreaM2*f.qty, unit:'м²'},
-    {cat:'sealant', idx:null, name:'Уплотнитель', need:perimeterM*wasteK*f.qty, unit:'м'},
-    {cat:'corner', idx:null, name:'Уголок', need:4*f.qty, unit:'шт'},
-    {cat:'screw', idx:null, name:'Винт', need:4*catalog.screwsPerCorner*f.qty, unit:'шт'},
+    {cat:'sealant', idx:null, name:'Уплотнитель (общий остаток)', need:perimeterM*wasteK*f.qty, unit:'м'},
+    {cat:'cornerKit', idx:system, name:`Угол+винты (${system})`, need:4*f.qty, unit:'компл.'},
   ];
   if(f.hingeMode==='install') stockNeeds.push({cat:'hinges', idx:f.hingeTypeIdx, name:`Петля «${hinge.name}»`, need:f.hingeCount*f.qty, unit:'шт'});
   if(f.handleNeeded) stockNeeds.push({cat:'handles', idx:f.handleTypeIdx, name:`Ручка «${handle.name}»`, need:f.handleQty*f.qty, unit:'шт'});
 
-  return {profile,glass,hinge,handle,glassW,glassH,glassAreaM2,perUnit,total,rows,specRows,stockNeeds};
+  return {profile,glass,hinge,handle,edge,packaging,system,glassW,glassH,glassAreaM2,perUnit,total,rows,specRows,stockNeeds};
 }
 
 function getStockFor(cat, idx){
@@ -685,8 +1027,7 @@ function getStockFor(cat, idx){
   if(cat==='hinges') return catalog.hinges[idx]?.stock||0;
   if(cat==='handles') return catalog.handles[idx]?.stock||0;
   if(cat==='sealant') return catalog.sealantStock||0;
-  if(cat==='corner') return catalog.cornerStock||0;
-  if(cat==='screw') return catalog.screwStock||0;
+  if(cat==='cornerKit') return idx==='РШ' ? (catalog.cornerRSHStock||0) : (catalog.cornerRUStock||0);
   return 0;
 }
 
@@ -731,9 +1072,9 @@ function calcAll(){
     breakdownHtml += `<div style="height:8px;border-bottom:1px dashed var(--line);"></div>`;
 
     const sideLine = (f.hingeMode!=='none')
-      ? `<tr><td colspan="4" style="font-family:'IBM Plex Mono',monospace;color:var(--ink-soft);">Направление открывания: левых — ${f.leftQty}, правых — ${f.rightQty} ${f.sidesConfirmed ? '(подтверждено)' : '(⚠ не подтверждено)'}</td></tr>`
+      ? `<tr><td colspan="4" style="font-family:'IBM Plex Mono',monospace;color:var(--ink-soft);">Направление (ЛЕВЫЙ/ПРАВЫЙ): левых — ${f.leftQty}, правых — ${f.rightQty} ${f.sidesConfirmed ? '(подтверждено)' : '(⚠ не подтверждено)'}</td></tr>`
       : '';
-    specHtml += `<tr><td colspan="4" style="background:var(--accent-soft);font-weight:600;">Фасад ${i+1} — ${Math.round(f.width)}×${Math.round(f.height)} мм, заказ ${f.qty} шт</td></tr>` + sideLine +
+    specHtml += `<tr><td colspan="4" style="background:var(--accent-soft);font-weight:600;">Фасад ${i+1} — ${Math.round(f.width)}×${Math.round(f.height)} мм, заказ ${f.qty} шт, система ${r.system}</td></tr>` + sideLine +
       r.specRows.map(sr=>`<tr><td>${sr.part}</td><td>${sr.size}</td><td>${sr.per}</td><td>${sr.per*f.qty}</td></tr>`).join('');
 
     r.stockNeeds.forEach(n=>{
@@ -751,8 +1092,6 @@ function calcAll(){
 
   renderStockTable(stockAgg);
   renderDiagrams();
-
-  window._orderState = {facades, computeFacade};
 }
 
 function plural(n, one, few, many){
@@ -800,8 +1139,8 @@ document.getElementById('copySpecBtn').addEventListener('click', ()=>{
   let text = `Спецификация заказа — ${facades.length} ${plural(facades.length,'позиция','позиции','позиций')}\n\n`;
   facades.forEach((f,i)=>{
     const r = computeFacade(f);
-    text += `Фасад ${i+1}: ${Math.round(f.width)}×${Math.round(f.height)} мм, заказ ${f.qty} шт\n`;
-    if(f.hingeMode!=='none') text += `Направление открывания: левых — ${f.leftQty}, правых — ${f.rightQty} ${f.sidesConfirmed?'(подтверждено)':'(НЕ ПОДТВЕРЖДЕНО)'}\n`;
+    text += `Фасад ${i+1}: ${Math.round(f.width)}×${Math.round(f.height)} мм, заказ ${f.qty} шт, система ${r.system}\n`;
+    if(f.hingeMode!=='none') text += `Направление: левых — ${f.leftQty}, правых — ${f.rightQty} ${f.sidesConfirmed?'(подтверждено)':'(НЕ ПОДТВЕРЖДЕНО)'}\n`;
     text += 'Деталь\tРазмер, мм\tКол-во/1\tКол-во на заказ\n';
     r.specRows.forEach(sr=> text += `${sr.part}\t${sr.size}\t${sr.per}\t${sr.per*f.qty}\n`);
     text += '\n';
